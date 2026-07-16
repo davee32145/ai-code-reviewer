@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Code Reviewer — Local</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        AI Code Reviewer
+      </div>
+      <div class="header-right">
+        <span class="local-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12"/></svg>
+          100% Local
+        </span>
+        <select id="modelSelect" title="Select Ollama model">
+          <option value="qwen2.5-coder">qwen2.5-coder</option>
+          <option value="codellama">codellama</option>
+          <option value="llama3.2">llama3.2</option>
+          <option value="deepseek-coder">deepseek-coder</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="ollama-status" id="ollamaStatus">
+    <span id="statusDot" class="dot dot-checking"></span>
+    <span id="statusText">Checking Ollama connection...</span>
+  </div>
+
+  <main>
+    <section class="input-section">
+      <div class="controls">
+        <div class="control-group">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="java">Java</option>
+            <option value="go">Go</option>
+            <option value="rust">Rust</option>
+            <option value="sql">SQL</option>
+            <option value="php">PHP</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="focus">Focus</label>
+          <select id="focus">
+            <option value="general">General Review</option>
+            <option value="security">Security</option>
+            <option value="performance">Performance</option>
+            <option value="readability">Readability</option>
+          </select>
+        </div>
+        <button id="reviewBtn" onclick="submitReview()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Review Code
+        </button>
+      </div>
+      <textarea id="codeInput" spellcheck="false" placeholder="// Paste your code here... (Ctrl+Enter to submit)
+
+def get_user(user_id):
+    query = 'SELECT * FROM users WHERE id = ' + user_id
+    return db.execute(query)
+"></textarea>
+    </section>
+
+    <div class="loader" id="loader" style="display:none">
+      <div class="spinner"></div>
+      <p>Local AI is thinking<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+      <p class="loader-sub">This may take 10–30s depending on your hardware</p>
+    </div>
+
+    <section class="result-section" id="resultSection" style="display:none">
+      <div class="result-header">
+        <h2>Review Result</h2>
+        <div class="score-badge" id="scoreBadge">—</div>
+      </div>
+      <div class="summary-card" id="summaryCard"></div>
+      <div class="panels">
+        <div class="panel">
+          <h3>Issues</h3>
+          <div id="issuesList"></div>
+        </div>
+        <div class="panel">
+          <h3>What's good</h3>
+          <div id="positivesList"></div>
+        </div>
+      </div>
+      <div class="refactor-card" id="refactorCard" style="display:none">
+        <h3>Suggested Refactor</h3>
+        <pre><code id="refactorCode"></code></pre>
+      </div>
+    </section>
+
+    <div class="error-toast" id="errorToast"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
